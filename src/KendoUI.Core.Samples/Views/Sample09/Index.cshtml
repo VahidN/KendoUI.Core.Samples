@@ -1,0 +1,183 @@
+﻿@using KendoUI.Core.Samples.Models
+@model OrderDetailViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style type="text/css">
+div.k-dropzone {
+    border: 1px solid #c5c5c5; /* For Default; Different for each theme */
+}
+
+div.k-dropzone em {
+    visibility: visible;
+}
+</style>
+
+
+<form asp-controller="Sample09"
+      asp-action="Index"
+      role="form"
+      data-ajax="true"
+      method="post" id="Form1" name="Form1">
+
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <fieldset>
+        <legend>OrderDetail</legend>
+
+        <div class="editor-label">
+            <label asp-for="Origin"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="Origin" class="k-textbox" />
+           <span asp-validation-for="Origin"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="NetWeight"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="NetWeight" class="k-textbox" />
+           <span asp-validation-for="NetWeight"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="ValueDate"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="ValueDate" class="k-textbox" />
+           <span asp-validation-for="ValueDate"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="Destination"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="Destination" class="k-textbox" />
+           <span asp-validation-for="Destination"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="Username"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="Username" class="k-textbox" />
+           <span asp-validation-for="Username"></span>
+        </div>
+
+        <div class="k-rtl k-header">
+            <input name="files" id="files" type="file" accept="image/*" />
+        </div>
+
+        <p>
+            <button class="k-button" type="submit" title="Sumbit">
+                Sumbit
+            </button>
+        </p>
+    </fieldset>
+</form>
+
+@section Scripts
+{
+        <script id="fileListTemplate" type="text/x-kendo-template">
+        <li class='k-file'>
+            <span class='k-progress'></span>
+            <span class='k-icon'></span>
+            <span class='k-filename' title='#=name#'>#=name# (#=size# bytes)</span>
+            <strong class='k-upload-status'></strong>
+        </li>
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+
+            $("#files").kendoUpload({
+                name: "files",
+                async: {
+                    // async configuration
+                    saveUrl: "@Url.Action("Save", "Sample09")", // the url to save a file is '/save'
+                    removeUrl: "@Url.Action("Remove", "Sample09")", // the url to remove a file is '/remove'
+                    autoUpload: false, // automatically upload files once selected
+                    removeVerb: 'POST',
+                    batch: false //Maximum request length exceeded.
+                },
+                multiple: true,
+                showFileList: true,
+                //template: kendo.template($('#fileListTemplate').html()),
+                localization: {
+                    select: 'انتخاب فایل‌ها برای ارسال',
+                    remove: 'حذف فایل',
+                    retry: 'سعی مجدد',
+                    headerStatusUploading: 'در حال ارسال فایل‌ها',
+                    headerStatusUploaded: 'پایان ارسال',
+                    cancel: "لغو",
+                    uploadSelectedFiles: "ارسال فایل‌ها",
+                    dropFilesHere: "فایل‌ها را برای ارسال، کشیده و در اینجا رها کنید",
+                    statusUploading: "در حال ارسال",
+                    statusUploaded: "ارسال شد",
+                    statusWarning: "اخطار",
+                    statusFailed: "خطا در ارسال"
+                },
+                cancel: function() {
+                    console.log('Cancel Event.');
+                },
+                complete: function() {
+                    console.log('Complete Event.');
+                },
+                error: function() {
+                    console.log('Error uploading file.');
+                },
+                progress: function(e) {
+                    console.log('Uploading file ' + e.percentComplete);
+                },
+                remove: function(e) {
+                    if (!confirm("Are you sure you want to remove the item?")) {
+                        e.preventDefault();
+                    } else {
+                        console.log('File removed.');
+                    }
+                },
+                select: function() {
+                    console.log('File selected.');
+                },
+                success: function() {
+                    console.log('Upload successful.');
+                },
+                upload: function(e) {
+                    console.log('Upload started.');
+                    // Sending metadata to the save action
+                    e.data = {
+                        codeId: "1234567",
+                        param2: 12
+                        //, ...
+                    };
+                }
+            }); // Create the Kendo Upload Widget
+
+            $("#ValueDate").kendoDatePicker();
+            $("#Destination").kendoComboBox({
+                dataSource: [
+                    "loc 1",
+                    "loc 2"
+                ]
+            });
+
+            var form = $('#Form1');
+            form.data('validator').settings.ignore = ''; // default is ":hidden".
+
+            $("form").kendoValidator();
+
+            //$("#Form1").kendoValidator();
+
+            //$("#Form1").submit(function (e) {
+            //    e.preventDefault();
+            //    var validator = $("#Form1").data("kendoValidator");
+            //    if (validator.validate()) {
+            //        alert("yes!");
+            //    }
+            //});
+        });
+    </script>
+}

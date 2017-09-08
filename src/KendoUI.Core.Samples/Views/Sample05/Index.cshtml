@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!--نحوه‌ی راست به چپ سازی گرید-->
+<div class="k-rtl">
+    <div id="report-grid"></div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            var productsDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "@Url.Action("GetProducts", "Sample05")",
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'GET'
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "data",
+                    total: "total",
+                    model: {
+                        fields: {
+                            "id": { type: "number" }, //تعیین نوع فیلد برای جستجوی پویا مهم است
+                            "name": { type: "string" },
+                            "isAvailable": { type: "boolean" },
+                            "price": { type: "number" },
+                            "addDate": { type: "date" }
+                        }
+                    },
+                    //groups: "Data"
+                },
+                error: function (e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "id", dir: "desc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true,
+                group: { field: "isAvailable" },
+                //serverGrouping: true,
+                aggregate: [
+                    { field: "name", aggregate: "count" },
+                    { field: "price", aggregate: "sum" }
+                ]
+            });
+
+            $("#report-grid").kendoGrid({
+                dataSource: productsDataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    previousNext: true, // default true
+                    numeric: true, // default true
+                    buttonCount: 5, // default 10
+                    refresh: true, // default false
+                    input: true, // default false
+                    pageSizes: true // default false
+                },
+                sortable: true,
+                filterable: true,
+                reorderable: true,
+                columnMenu: true,
+                groupable: true, // allows the user to alter what field the grid is grouped by
+                columns: [
+                    { field: "id", title: "شماره", width: "130px" },
+                    {
+                        field: "name", title: "نام محصول",
+                        footerTemplate: "تعداد: #=count#"
+                    },
+                    {
+                        field: "addDate", title: "تاریخ ثبت",
+                        //format: "{0:yyyy/MM/dd}",
+                        //filterable: { ui: "datepicker" }
+                        template: "#=moment(addDate).format('jYYYY/jMM/jDD')#"
+                    },
+                    {
+                        field: "isAvailable", title: "موجود است",
+                        template: '<input type="checkbox" #= isAvailable ? checked="checked" : "" # disabled="disabled" ></input>'
+                    },
+                    {
+                        field: "price", title: "قیمت",
+                        //format: "{0:c0}",
+                        template: kendo.template($("#priceTemplate").html()),
+                        footerTemplate: "جمع: #=kendo.toString(sum,'c0')#"
+                    }
+                ],
+                toolbar: [
+                    { template: kendo.template($("#toolbarTemplate").html()) }
+                ]
+            });
+        });
+    </script>
+
+    <script>
+        // این اطلاعات برای تهیه خروجی سمت سرور مناسب هستند
+        function getCurrentGridFilters() {
+            var dataSource = $("#report-grid").data("kendoGrid").dataSource;
+            var gridState = {
+                page: dataSource.page(),
+                pageSize: dataSource.pageSize(),
+                sort: dataSource.sort(),
+                group: dataSource.group(),
+                filter: dataSource.filter()
+            };
+            return kendo.stringify(gridState);
+        }
+    </script>
+
+    <script id="toolbarTemplate" type="text/x-kendo-template">
+        <a class="k-button" href="\#" onclick="alert('gridState: ' + getCurrentGridFilters());">نوار ابزار سفارشی</a>
+    </script>
+
+    <script type="text/x-kendo-template" id="priceTemplate">
+        #if( price > 2490 ) {#
+        <span style="background:brown; color:yellow;">#=kendo.toString(price,'c0')#</span>
+        #} else {#
+        #= kendo.toString(price,'c0')#
+        #}#
+    </script>
+}

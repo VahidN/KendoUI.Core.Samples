@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="chart" style="width: 600px;" align="center"></div>
+
+<div dir="ltr" align="center">
+    <fieldset>
+        <legend>تغییر نوع نمودار در زمان اجرا</legend>
+        <input type="radio" name="rdShowApproach" onclick="changeChartType('bar')" />bar
+        <input type="radio" name="rdShowApproach" onclick="changeChartType('pie')"/>pie
+        <input type="radio" name="rdShowApproach" checked="checked" onclick=" changeChartType('column')"/>column
+        <input type="radio" name="rdShowApproach" onclick="changeChartType('donut')"/>donut
+        <input type="radio" name="rdShowApproach" onclick="changeChartType('line')"/>line
+        <input type="radio" name="rdShowApproach" onclick="changeChartType('waterfall')"/>waterfall
+        <input type="radio" name="rdShowApproach" onclick="changeChartType('funnel')"/>funnel
+        <br />
+        <button onclick="doExport()" class="k-button">تهیه خروجی</button>
+    </fieldset>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+    $(function(){
+        $('#chart').ShowChart({
+            url: "@Url.Action("GetProducts","Sample10")",
+            legendPosition: "bottom",
+            seriesType: "column",
+            text: "نمودار",
+            categoryAxisLabelsRotation: -45,
+            font: '16px Iranian Sans'
+        });
+
+        kendo.pdf.defineFont({
+            /*"Verdana": "/fonts/Verdana.ttf", // this is a URL
+            "Verdana|Bold": "/fonts/Verdana_Bold.ttf",
+            "Verdana|Bold|Italic": "/fonts/Verdana_Bold_Italic.ttf",
+            "Verdana|Italic": "/fonts/Verdana_Italic.ttf"*/
+            "Iranian Sans":"/fonts/irsans.ttf"
+        });
+    });
+
+        function changeChartType(type) {
+            var chart = $("#chart").data("kendoChart");
+            chart.options.series[0].type = type;
+            chart.refresh();
+        }
+
+        function doExport() {
+            var chart = $("#chart").data("kendoChart");
+
+            chart.saveAsPDF(); // it needs version 2014.3.1119 +
+            // or
+            chart.exportImage().done(function (data) {
+                kendo.saveAs({
+                    dataURI: chart.imageDataURL(),
+                    fileName: "chart.png"
+                });
+            });
+        }
+
+
+    (function ($) {
+        $.fn.ShowChart = function (options) {
+            var defaults = {
+                url: '/',
+                text: 'نمودار دایره ایی',
+                theme: 'blueOpal',
+                font: '13px bbc-nassim-bold',
+                legendPosition: 'left',
+                seriesField: 'count',
+                seriesCategoryField: 'value',
+                titlePosition: 'top',
+                chartWidth: 400,
+                chartHeight: 400,
+                seriesType: 'pie',
+                categoryAxisLabelsRotation: 90
+            };
+            options = $.extend(defaults, options);
+            return this.each(function () {
+                var chartDataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: options.url,
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            type: 'GET'
+                        }
+                    },
+                    error: function (e) {
+                        alert(e.errorThrown.stack);
+                    }
+                });
+                $(this).kendoChart({
+                    chartArea: {
+                        height: options.chartHeight
+                    },
+                    theme: options.theme,
+                    title: {
+                        text: options.text,
+                        font: options.font,
+                        position: options.titlePosition
+                    },
+                    legend: {
+                        position: options.legendPosition,
+                        labels: {
+                            font: options.font
+                        }
+                    },
+                    seriesDefaults: {
+                        labels: {
+                            visible: true,
+                            format: "{0}%"
+                        }
+                    },
+                    dataSource: chartDataSource,
+                    series: [
+                        {
+                            type: options.seriesType,
+                            field: options.seriesField,
+                            categoryField: options.seriesCategoryField,
+                            aggregate: "sum"
+                        }
+                    ],
+                    tooltip: {
+                        visible: true,
+                        template: "${category}: ${value}",
+                        font: options.font
+                    },
+                    categoryAxis: [{
+                        labels: {
+                            rotation: options.categoryAxisLabelsRotation
+                        }
+                    }]
+                });
+            });
+        };
+    })(jQuery);
+    </script>
+}

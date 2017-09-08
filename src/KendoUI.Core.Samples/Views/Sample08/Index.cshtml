@@ -1,0 +1,135 @@
+﻿@using KendoUI.Core.Samples.Models
+@model OrderDetailViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<form asp-controller="Sample08"
+      asp-action="Index"
+      role="form"
+      data-ajax="true"
+      method="post" id="Form1" name="Form1">
+
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <fieldset>
+        <legend>OrderDetail</legend>
+
+        <div class="editor-field">
+           <input asp-for="OrderDetailId" data-val="false" value="1" />
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="Origin"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="Origin" class="k-textbox" />
+           <span asp-validation-for="Origin"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="NetWeight"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="NetWeight" class="k-textbox" />
+           <span asp-validation-for="NetWeight"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="ValueDate"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="ValueDate" class="k-textbox" />
+           <span asp-validation-for="ValueDate"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="Destination"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="Destination" class="k-textbox" />
+           <span asp-validation-for="Destination"></span>
+        </div>
+
+        <div class="editor-label">
+            <label asp-for="Username"></label>
+        </div>
+        <div class="editor-field">
+           <input dir="ltr" asp-for="Username" class="k-textbox" />
+           <span asp-validation-for="Username"></span>
+        </div>
+
+        <p>
+            <button class="k-button" type="submit" title="Sumbit">
+                Sumbit
+            </button>
+        </p>
+    </fieldset>
+</form>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+
+            $("#ValueDate").kendoDatePicker();
+            $("#Destination").kendoComboBox({
+                dataSource: [
+                    "loc 1",
+                    "loc 2"
+                ]
+            });
+
+            var form = $('#Form1');
+            form.data('validator').settings.ignore = ''; // default is ":hidden".
+
+            $.validator.methods.remote = function () { /* disabled */ };
+            $("form").kendoValidator({
+                onfocusout: true,
+                onkeyup: true,
+                rules: {
+                    remote: function (input) {
+                        var remoteAttr = input.attr("data-val-remote-url");
+                        if (typeof remoteAttr === typeof undefined || remoteAttr === false) {
+                            return true;
+                        }
+
+                        var isInvalid = true;
+                        var data = {};
+                        data[input.attr('name')] = input.val();
+
+                        $.ajax({
+                            url: remoteAttr,
+                            mode: "abort",
+                            port: "validate" + input.attr('name'),
+                            dataType: "json",
+                            type: input.attr("data-val-remote-type"),
+                            data: data,
+                            async: false,
+                            success: function (response) {
+                                isInvalid = response;
+                            }
+                        });
+                        return !isInvalid;
+                    }
+                },
+                messages: {
+                    remote: function (input) {
+                        return input.data('val-remote');
+                    }
+                }
+            });
+
+            //$("#Form1").kendoValidator();
+
+            //$("#Form1").submit(function (e) {
+            //    e.preventDefault();
+            //    var validator = $("#Form1").data("kendoValidator");
+            //    if (validator.validate()) {
+            //        alert("yes!");
+            //    }
+            //});
+        });
+    </script>
+}

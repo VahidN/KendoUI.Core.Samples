@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $("#pickDate").kendoDatePicker({
+                format: "yyyy/MM/dd"
+            });
+        });
+
+        $(function () {
+            // initialize any widgets in the #container div
+            kendo.init($("#container"));
+        });
+    </script>
+
+    <span>
+        Pick a date: <input id="pickDate" type="text" />
+    </span>
+
+    <div id="container">
+        <input id="dateOfBirth" type="text"
+               data-role="datepicker"
+               data-format="yyyy/MM/dd" />
+        <div id="colors"
+             data-role="colorpalette"
+             data-columns="4"
+             data-tile-size="{ width: 34, height: 19 }"></div>
+    </div>
+
+
+    <input id="colorPicker1" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#colorPicker1").kendoComboBox({
+                dataSource: ["Blue", "Green", "Red", "Yellow"]
+            });
+        });
+    </script>
+
+    <input id="colorPicker2" data-role="combobox" data-source='["Blue", "Green", "Red", "Yellow"]' />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            kendo.init($("#colorPicker2"));
+        });
+    </script>
+
+    <input id="colorPicker3" />
+    <script type="text/javascript">
+        function onColorChange(e) {
+             alert('Color Change!');
+        }
+
+        $(document).ready(function () {
+            $("#colorPicker3").kendoComboBox({
+                dataSource: ["Blue", "Green", "Red", "Yellow"],
+                change: onColorChange
+            });
+        });
+    </script>
+
+
+    <input id="colorPicker4" data-role="combobox"
+           data-source='["Blue", "Green", "Red", "Yellow"]'
+           data-change="onColorChange" />
+
+    <script type="text/javascript">
+        function onColorChange(e) {
+            alert('Color Change!');
+        }
+
+        $(document).ready(function () {
+            kendo.init($("#colorPicker4"));
+        });
+    </script>
+}

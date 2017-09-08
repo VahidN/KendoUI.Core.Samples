@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="container1"></div>
+
+<div class="k-rtl">
+   <div id="container2"><ul></ul></div>
+</div>
+
+@section Scripts
+{
+    <!--دریافت اطلاعات از منبع محلی-->
+    <script id="javascriptTemplate" type="text/x-kendo-template">
+        <ul>
+            # for (var i = 0; i < data.length; i++) { #
+            <li>#= data[i] #</li>
+            # } #
+        </ul>
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            var data = ['User 1', 'User 2', 'User 3'];
+            var template = kendo.template($("#javascriptTemplate").html());
+            var result = template(data); //Execute the template
+            $("#container1").html(result); //Append the result
+        });
+    </script>
+
+
+    <script id="template1" type="text/x-kendo-template">
+        <li>#=id# - #:name# - #=kendo.toString(price, "c")#</li>
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            var producatsTemplate1 = kendo.template($("#template1").html());
+            var productsDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "@Url.Action("GetProducts", "Sample04")",
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'GET'
+                    }
+                },
+                error: function (e) {
+                    alert(e.errorThrown);
+                },
+                change: function () {
+                    $("#container2 > ul").html(kendo.render(producatsTemplate1, this.view()));
+                }
+            });
+            productsDataSource.read();
+        });
+    </script>
+}

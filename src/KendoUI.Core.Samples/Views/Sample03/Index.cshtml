@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!--نحوه‌ی راست به چپ سازی گرید-->
+<div class="k-rtl">
+    <div id="report-grid"></div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            var productsDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "@Url.Action("GetProducts", "Sample03")",
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'GET'
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "data",
+                    total: "total",
+                    model: {
+                        fields: {
+                            "id": { type: "number" }, //تعیین نوع فیلد برای جستجوی پویا مهم است
+                            "name": { type: "string" },
+                            "isAvailable": { type: "boolean" },
+                            "price": { type: "number" }
+                        }
+                    }
+                },
+                error: function (e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "id", dir: "desc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            $("#report-grid").kendoGrid({
+                dataSource: productsDataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: true,
+                sortable: true,
+                filterable: true,
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { field: "id", title: "شماره", width: "130px" },
+                    { field: "name", title: "نام محصول" },
+                    {
+                        field: "isAvailable", title: "موجود است",
+                        template: '<input type="checkbox" #= isAvailable ? checked="checked" : "" # disabled="disabled" ></input>'
+                    },
+                    { field: "price", title: "قیمت", format: "{0:c}" }
+                ]
+            });
+        });
+    </script>
+}

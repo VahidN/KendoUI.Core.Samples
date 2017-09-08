@@ -1,0 +1,14 @@
+{
+  "name": "kendo-global",
+  "homepage": "https://github.com/loudenvier/kendo-global",
+  "_release": "df161bf529",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "df161bf52906ee1f34ac1a505d3dbb884eff7782"
+  },
+  "_source": "https://github.com/loudenvier/kendo-global.git",
+  "_target": "*",
+  "_originalSource": "kendo-global",
+  "_direct": true
+}
