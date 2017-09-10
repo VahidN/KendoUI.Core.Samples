@@ -34,7 +34,7 @@ namespace Kendo.DynamicLinq
         {
             var proptype = type.GetProperty(Field).PropertyType;
 
-#if NETSTANDARD1_6
+#if NETSTANDARD1_3
             var aggregate = Aggregate.ToTitleCase();
 #else
             var aggregate = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(Aggregate);
