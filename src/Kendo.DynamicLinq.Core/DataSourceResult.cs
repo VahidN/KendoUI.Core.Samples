@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace Kendo.DynamicLinq
 {
     /// <summary>
-    /// Describes the result of Kendo DataSource read operation. 
+    /// Describes the result of Kendo DataSource read operation.
     /// </summary>
     [KnownType("GetKnownTypes")]
     public class DataSourceResult
@@ -27,6 +27,7 @@ namespace Kendo.DynamicLinq
         /// </summary>
         public object Aggregates { get; set; }
 
+#if NETSTANDARD2_0
         /// <summary>
         /// Used by the KnownType attribute which is required for WCF serialization support
         /// </summary>
@@ -46,5 +47,6 @@ namespace Kendo.DynamicLinq
                            .Where(t => t.Name.StartsWith("DynamicClass"))
                            .ToArray();
         }
+#endif
     }
 }
