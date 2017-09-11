@@ -5,6 +5,8 @@
       "wwwroot/css/kendo.common.min.css",
       "wwwroot/css/kendo.rtl.min.css",
       "wwwroot/css/kendo.default.min.css",
+      "wwwroot/lib/bootstrap/dist/css/bootstrap.min.css",
+      "wwwroot/css/jquery.Bootstrap-PersianDateTimePicker.css",
       "wwwroot/css/site.css"
     ]
   },
@@ -23,6 +25,9 @@
       "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
       "wwwroot/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js",
       "wwwroot/js/kendo.aspnetmvc.js",
+      "wwwroot/lib/bootstrap/dist/js/bootstrap.min.js",
+      "wwwroot/js/MdBootstrapPersianDateTimePicker/jalaali.js",
+      "wwwroot/js/MdBootstrapPersianDateTimePicker/jquery.Bootstrap-PersianDateTimePicker.js",
       "wwwroot/js/site.js"
     ],
     "minify": {

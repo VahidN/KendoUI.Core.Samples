@@ -2,6 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+  /* براي كتابخانه‌ي انتخاب تاريخ هست */
+  [data-name="md-persiandatetimepicker"] table.table td {
+    font-family: Tahoma;
+    font-size: 14px;
+  }
+ </style>
+
 <!--نحوه‌ی راست به چپ سازی گرید-->
 <div class="k-rtl">
     <div id="report-grid"></div>
@@ -70,7 +78,10 @@
                             "name": { type: "string", validation: { required: true } },
                             "isAvailable": { type: "boolean" },
                             "price": { type: "number", validation: { required: true, min: 1 } },
-                            "addDate": { type: "date", validation: { required: true } }
+                            "addDate": {
+                                 type: "date",
+                                 validation: { required: true }
+                            }
                         }
                     }
                 },
@@ -136,7 +147,37 @@
                         field: "addDate", title: "تاریخ ثبت",
                         //format: "{0:yyyy/MM/dd}",
                         //filterable: { ui: "datepicker" }
-                        template: "#=moment(addDate).format('jYYYY/jMM/jDD')#"
+                        template: "#=moment(addDate).format('jYYYY/jMM/jDD')#",
+                        editor: function(container, options) {
+                            // دريافت تاريخ ميلادي و تبديل آن به شمسي جهت نمايش در تكست باكس
+                            var persianAddDate = moment(options.model.addDate).format('jYYYY/jMM/jDD');
+
+                            // ايجاد كنترل انتخاب تاريخ سفارشي با مقدار تاريخ شمسي دريف جاري
+                            var input = $('<div dir="ltr" class="input-group">'+
+                                          '<div class="input-group-addon" data-name="datepicker1" data-mddatetimepicker="true" data-trigger="click" data-targetselector="#' + options.field + '" data-fromdate="false" data-enabletimepicker="false" data-englishnumber="true" data-placement="left">'+
+                                          '<span class="glyphicon glyphicon-calendar"></span>'+
+                                          '</div>'+
+                                          '<input type="text" value="'+ persianAddDate +'" class="form-control" id="' + options.field + '" placeholder="از تاریخ" data-mddatetimepicker="true" data-trigger="click" data-targetselector="#' + options.field + '" data-englishnumber="true"  data-fromdate="true" data-enabletimepicker="false" data-placement="right" />'+
+                                          '</div>');
+                             // افزودن كنترل جديد به صفحه
+                             input.appendTo(container);
+
+                             // با خبر سازي كتابخانه انتخاب تاريخ از تكست باكس جديد
+                             EnableMdDateTimePickers();
+
+                             // هر زمانيكه كاربر تاريخ جديدي را وارد كرد، آن‌را به ميلادي تبديل كرده و در مدل رديف جاري ثبت مي‌كنيم
+                             // در نهايت اين مقدار ميلادي است كه به سمت سرور ارسال خواهد شد
+                             $('#' + options.field).change(function(){
+                                 var selectedPersianDate = $(this)[0].value;
+                                 var gregorianAddDate = moment(selectedPersianDate, 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
+                                 options.model.set('addDate',  gregorianAddDate);
+                             });
+
+                             // با از دست رفتن فوكوس نياز است اين كنترل مخفي شود
+                              $('#' + options.field).blur(function(){
+                                 $('[data-name="datepicker1"]').MdPersianDateTimePicker('hide');
+                              });
+                        }
                     },
                     {
                         field: "isAvailable", title: "موجود است",
