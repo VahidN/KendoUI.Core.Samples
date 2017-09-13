@@ -38,35 +38,36 @@
     $(function () {
         var productsDataSource = new kendo.data.DataSource({
             transport: {
-                read: {
+                 read: {
                     url: "@Url.Action("GetProducts","Sample06")",
                     dataType: "json",
                     contentType: 'application/json; charset=utf-8',
                     type: 'GET',
                     data: { param1: "val1", param2: "val2" } // ارسال اطلاعات اضافی و سفارشی به سرور در حین درخواست
-                },
-                create: {
+                 },
+                 create: {
                     url: "@Url.Action("PostProduct","Sample06")",
                     contentType: 'application/json; charset=utf-8',
                     type: "POST"
-                },
-                update: {
+                 },
+                 update: {
                     url: function (product) {
                         return "@Url.Action("UpdateProduct","Sample06")/" + product.id;
                         },
                         contentType: 'application/json; charset=utf-8',
                         type: "PUT"
-                    },
-                    destroy: {
+                 },
+                 destroy: {
                         url: function (product) {
                             return "@Url.Action("DeleteProduct","Sample06")/" + product.id;
                         },
                         contentType: 'application/json; charset=utf-8',
                         type: "DELETE"
-                    },
-                    parameterMap: function (options) {
-                        return kendo.stringify(options);
-                    }
+                 },
+                 parameterMap: function (options) {
+                     console.log(options);
+                     return kendo.stringify(options);
+                 }
                 },
                 schema: {
                     data: "data",
@@ -79,7 +80,7 @@
                             "isAvailable": { type: "boolean" },
                             "price": { type: "number", validation: { required: true, min: 1 } },
                             "addDate": {
-                                 type: "date",
+                                 type: "string", // use "date" if you want to use the built-in datapicker
                                  validation: { required: true }
                             }
                         }
@@ -122,7 +123,9 @@
                     info: true // show a label with current paging information in it
                 },
                 sortable: true,
-                filterable: true,
+                filterable: {
+                   mode: "menu"
+                },
                 reorderable: true,
                 columnMenu: true,
                 groupable: true, // allows the user to alter what field the grid is grouped by
@@ -147,8 +150,26 @@
                         field: "addDate", title: "تاریخ ثبت",
                         //format: "{0:yyyy/MM/dd}",
                         //filterable: { ui: "datepicker" }
-                        template: "#=moment(addDate).format('jYYYY/jMM/jDD')#",
-                        editor: addMdDateTimePicker
+                        template: kendo.template($("#persianDateTemplate").html()),
+                        editor: addMdDateTimePicker,
+                        filterable: {
+                            ui: function(element) {
+                                var name = $(element[0]).data("bind").replace("[","").replace("]","").replace(".","").replace(" ","").replace(":","");
+                                $(element[0])
+                                  .addClass("k-input k-textbox")
+                                  .attr("style", "width:100%")
+                                  .attr("data-mddatetimepicker", "true")
+                                  .attr("data-englishnumber", "true")
+                                  .attr("data-trigger", "click")
+                                  .attr("data-targetselector", "#" + name)
+                                  .attr("data-fromdate", "true")
+                                  .attr("data-enabletimepicker", "false")
+                                  .attr("data-placement", "right")
+                                  .attr("name", name)
+                                  .attr("id", name);
+                                EnableMdDateTimePickers();
+                            }
+                        }
                     },
                     {
                         field: "isAvailable", title: "موجود است",
@@ -168,6 +189,17 @@
                         title: "&nbsp;", width: "160px"
                     }
                 ],
+                filter: function(args) {
+                    console.log(args);
+                    if(args.field === "addDate") {
+                        for(var i = 0; i < args.filter.filters.length; i++) {
+                            var filterValue = args.filter.filters[i].value;
+                            if(filterValue) {
+                               args.filter.filters[i].value = moment(filterValue, 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
+                            }
+                        }
+                    }
+                },
                 toolbar: [
                     { name: "create", text: "افزودن ردیف جدید" },
                     { name: "save", text: "ذخیره‌ی تمامی تغییرات" },
@@ -180,7 +212,7 @@
                         confirmation: "آیا مایل به حذف این رکورد هستید؟",
                         confirmDelete: "حذف"
                     },
-                    commands: {
+                commands: {
                         create: "افزودن ردیف جدید",
                         cancel: "لغو کلیه‌ی تغییرات",
                         save: "ذخیره‌ی تمامی تغییرات",
@@ -211,7 +243,8 @@
         // استفاده از يك كنترل انتخاب تاريخ شمسي بجاي نمونه‌ي توكار ميلادي
         function addMdDateTimePicker(container, options) {
             // دريافت تاريخ ميلادي و تبديل آن به شمسي جهت نمايش در تكست باكس
-            var persianDate = moment(options.model[options.field]).format('jYYYY/jMM/jDD');
+            var fieldValue = options.model[options.field];
+            var persianDate = fieldValue ? moment(fieldValue).format('jYYYY/jMM/jDD') : "";
 
             // ايجاد كنترل انتخاب تاريخ سفارشي با مقدار تاريخ شمسي دريف جاري
             var input = $('<div dir="ltr" class="input-group">'+
@@ -230,8 +263,10 @@
             // در نهايت اين مقدار ميلادي است كه به سمت سرور ارسال خواهد شد
             $('#' + options.field).change(function(){
                 var selectedPersianDate = $(this)[0].value;
-                var gregorianDate = moment(selectedPersianDate, 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
-                options.model.set(options.field,  gregorianDate);
+                if(selectedPersianDate) {
+                   var gregorianDate = moment(selectedPersianDate, 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
+                   options.model.set(options.field,  gregorianDate);
+                }
             });
 
             // با از دست رفتن فوكوس نياز است اين كنترل مخفي شود
@@ -250,6 +285,12 @@
         <span style="background:brown; color:yellow;">#=kendo.toString(price,'c0')#</span>
         #} else {#
         #= kendo.toString(price,'c0')#
+        #}#
+    </script>
+
+    <script id="persianDateTemplate" type="text/x-kendo-template">
+        #if( addDate ) {#
+           #=moment(addDate).format('jYYYY/jMM/jDD')#
         #}#
     </script>
 }
