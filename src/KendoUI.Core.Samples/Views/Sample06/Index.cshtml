@@ -20,6 +20,7 @@
         <legend>روش ویرایش</legend>
         <input type="radio" name="rdEditApproach" checked="checked" onclick="popupEdit()" />Popup
         <input type="radio" name="rdEditApproach" onclick="inlineEdit()" />Inline
+		<input type="radio" name="rdEditApproach" onclick="incellEdit()" />Incell
     </fieldset>
 </div>
 
@@ -32,6 +33,9 @@
         function inlineEdit() {
             $("#report-grid").data("kendoGrid").options.editable.mode = "inline";
         }
+        function incellEdit() {
+            $("#report-grid").data("kendoGrid").options.editable.mode = "incell";
+        }		
     </script>
 
     <script type="text/javascript">
@@ -127,7 +131,7 @@
                    mode: "menu"
                 },
                 reorderable: true,
-                columnMenu: true,
+                columnMenu: true,				
                 groupable: true, // allows the user to alter what field the grid is grouped by
                 editable: {
                     confirmation: "آیا مایل به حذف ردیف انتخابی هستید؟",
@@ -241,7 +245,8 @@
         }
 
         // استفاده از يك كنترل انتخاب تاريخ شمسي بجاي نمونه‌ي توكار ميلادي
-        function addMdDateTimePicker(container, options) {
+        function addMdDateTimePicker(container, options) {   
+		    // console.log(options);
             // دريافت تاريخ ميلادي و تبديل آن به شمسي جهت نمايش در تكست باكس
             var fieldValue = options.model[options.field];
             var persianDate = fieldValue ? moment(fieldValue).format('jYYYY/jMM/jDD') : "";
