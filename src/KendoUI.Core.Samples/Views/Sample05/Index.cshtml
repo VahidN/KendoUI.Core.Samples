@@ -7,6 +7,12 @@
     <div id="report-grid"></div>
 </div>
 
+<div dir="ltr" align="center">
+    <fieldset style="width: 400px">
+        <legend>جستجوي سفارشي</legend>
+        <button onclick="customSearch()" class="k-button">جستجو</button>
+    </fieldset>
+</div>
 
 @section Scripts
 {
@@ -113,6 +119,21 @@
                 filter: dataSource.filter()
             };
             return kendo.stringify(gridState);
+        }
+
+        function customSearch() {
+           var filters = [];
+           var grid = $("#report-grid").data("kendoGrid");
+
+           filters.push({ field: "name", operator: "contains", value: "نام 1500" });
+           filters.push({ field: "price", operator: "eq", value: 2490 });
+
+           grid.dataSource.filter({
+                logic: "or",
+                filters: filters
+           });
+           grid.dataSource.read();
+           //grid.refresh();
         }
     </script>
 
