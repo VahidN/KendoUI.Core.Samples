@@ -23,6 +23,7 @@ namespace KendoUI.Core.Samples.Controllers
         }
 
         [HttpDelete]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteProduct(int id)
         {
             var item = ProductDataSource.LatestProducts.FirstOrDefault(x => x.Id == id);

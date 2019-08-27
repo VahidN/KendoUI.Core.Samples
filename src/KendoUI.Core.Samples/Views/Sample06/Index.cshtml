@@ -1,5 +1,12 @@
-﻿@{
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
     ViewData["Title"] = "Home Page";
+}
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
 }
 
 <style>
@@ -26,6 +33,12 @@
 
 @section Scripts
 {
+    <script type="text/javascript">
+        $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+            jqXHR.setRequestHeader("__RequestVerificationToken", '@GetAntiXsrfRequestToken()');
+        });
+    </script>
+
     <script>
         function popupEdit() {
             $("#report-grid").data("kendoGrid").options.editable.mode = "popup";
@@ -35,7 +48,7 @@
         }
         function incellEdit() {
             $("#report-grid").data("kendoGrid").options.editable.mode = "incell";
-        }		
+        }
     </script>
 
     <script type="text/javascript">
@@ -131,7 +144,7 @@
                    mode: "menu"
                 },
                 reorderable: true,
-                columnMenu: true,				
+                columnMenu: true,
                 groupable: true, // allows the user to alter what field the grid is grouped by
                 editable: {
                     confirmation: "آیا مایل به حذف ردیف انتخابی هستید؟",
@@ -245,7 +258,7 @@
         }
 
         // استفاده از يك كنترل انتخاب تاريخ شمسي بجاي نمونه‌ي توكار ميلادي
-        function addMdDateTimePicker(container, options) {   
+        function addMdDateTimePicker(container, options) {
 		    // console.log(options);
             // دريافت تاريخ ميلادي و تبديل آن به شمسي جهت نمايش در تكست باكس
             var fieldValue = options.model[options.field];
